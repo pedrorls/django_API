@@ -1,12 +1,11 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Snippet
 from .serializers import SnippetSerializer
 
 
-@csrf_exempt
+@api_view(['GET', 'POST'])
 def snippet_list(request):
     """
     List all code snippets, or create a new snippet
@@ -14,15 +13,14 @@ def snippet_list(request):
     if request.method == 'GET':
         snippets = Snippet.objects.all()
         serializers = SnippetSerializer(snippets, many=True)
-        return JsonResponse(serializers)
+        return Response(serializers.data)
 
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = SnippetSerializer(data=data)
+        serializer = SnippetSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.data, status=400)
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
 def snippet_detail(request, pk):
@@ -30,7 +28,7 @@ def snippet_detail(request, pk):
     Retrieve, update, delete a code snippet.
     """
     try:
-        snippet = Snippet.objects.all(pk=pk)
+        snippet = Snippet.objects.get(pk=pk)
     except Snippet.DoesNotExist:
         return HttpResponse(status=404)
 
