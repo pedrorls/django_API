@@ -1,8 +1,13 @@
 from django.conf.urls import url, include
+from rest_framework import renderers
 from rest_framework.urlpatterns import format_suffix_patterns
-from . import views
+from .views import SnippetViewSet, UserViewSet, api_root
 
 # API endpoints
+snippet_list = SnippetViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
 urlpatterns = format_suffix_patterns([
     url(r'^$', views.api_root),
     url(r'^snippets/$',
