@@ -1,4 +1,4 @@
-from rest_framework import viewsets, renderers
+from rest_framework import viewsets, renderers, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, api_view
 from django.contrib.auth.models import User
