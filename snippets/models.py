@@ -22,6 +22,9 @@ class Snippet(models.Model):
         'auth.User', related_name='snippets', on_delete=models.CASCADE)
     highlighted = models.TextField()
 
+    class Meta:
+        ordering = ('created',)
+
     def save(self, *args, **kwargs):
         lexer = get_lexer_by_name(self.language)
         lineos = self.lineos and 'table' or False
@@ -30,6 +33,3 @@ class Snippet(models.Model):
             style=self.style, lineos=lineos, full=True, **options)
         self.highlighted = highlight(self.code, lexer, formatter)
         super(Snippet, self).save(*args, **kwargs)
-
-    class Meta:
-        ordering = ('created',)
